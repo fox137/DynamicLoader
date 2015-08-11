@@ -1,0 +1,9 @@
+DynamicLoader/bin/
+DynamicLoader/gen/
+DynamicLoader/.settings/
+
+DynamicPlugin1/bin/
+DynamicPlugin1/gen/
+DynamicPlugin1/.settings/
+
+
