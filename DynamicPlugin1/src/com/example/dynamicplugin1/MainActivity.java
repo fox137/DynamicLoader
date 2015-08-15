@@ -3,6 +3,7 @@ package com.example.dynamicplugin1;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,35 +12,32 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class MainActivity extends BaseActivity implements OnClickListener{
+public class MainActivity extends BasePluginActivity implements OnClickListener{
 	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		LinearLayout ll = new LinearLayout(mContext);
-		TextView tv = new TextView(mContext);
-		tv.setText("I am plugin 1");
-		ll.addView(tv);
-		
-		Button btn = new Button(mContext);
-		btn.setText("jump");
-		btn.setTag(1);
-		btn.setOnClickListener(this);
-		ll.addView(btn);
-		setContentView(ll);
+		setContentView(R.layout.activity_plugin_main);
+		findViewById(R.id.pl_btn_jumpinner).setOnClickListener(this);
 	}
 
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		switch ((Integer)v.getTag()) {
-		case 1:
+		switch (v.getId()) {
+		case R.id.pl_btn_jumpinner:
 			startActivity(new Intent(mContext, InnerActivity.class));
 			break;
 
 		default:
 			break;
 		}
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		Log.d(TAG, "plug main onResume");
 	}
 }
