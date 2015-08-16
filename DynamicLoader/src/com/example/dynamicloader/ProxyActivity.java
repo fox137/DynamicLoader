@@ -9,7 +9,9 @@ import java.lang.reflect.Method;
 import com.example.pluginlib.IActivityLifeCircle;
 
 import dalvik.system.DexClassLoader;
+import android.R.integer;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -38,7 +40,8 @@ public class ProxyActivity extends Activity {
 	private AssetManager mAssetManager;
 	private Resources mResources;
 	private Theme mTheme;
-	private IActivityLifeCircle mPluginLife;
+	private Object mPluginInstance;
+	private Class<?> mPluginClass;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,43 +53,40 @@ public class ProxyActivity extends Activity {
 			// for host to start activity
 			launchPluginActivity(dexPath);
 		} else {
-			// for plugin to start activity
+			// for plugin to start inner activity
 			launchPluginActivity(clsName, dexPath, libPath);
 		}
 	}
 
 	private void launchPluginActivity(String apkPath) {
 		PackageInfo pi = this.getPackageManager().getPackageArchiveInfo(apkPath, PackageManager.GET_ACTIVITIES);
-		String cn = pi.activities[0].name;
-		String lp = pi.applicationInfo.nativeLibraryDir;
-		Log.d(TAG, "launchPluginActivity apkPath=" + apkPath + ", activityname=" + cn + ", libdir=" + lp);
-		launchPluginActivity(cn, apkPath, lp);
+		String atName = pi.activities[0].name;
+		String libDir = pi.applicationInfo.nativeLibraryDir;
+		Log.d(TAG, "launchPluginActivity apkPath=" + apkPath + ", activityname=" + atName + ", libdir=" + libDir);
+		launchPluginActivity(atName, apkPath, libDir);
 	}
 
 	private void launchPluginActivity(String className, String dexPath, String libPath) {
 		loadResources(dexPath);
-		String dexOutputDir = this.getApplicationInfo().dataDir;
-
-		DexClassLoader classLoader = new DexClassLoader(dexPath, dexOutputDir, libPath,
-				ClassLoader.getSystemClassLoader());
+		DexClassLoader classLoader = PluginManager.getManager().getClassLoader(this);
 
 		try {
-			Class<?> clazz = classLoader.loadClass(className);
-			Constructor<?> cons = clazz.getConstructor();
-			Object instance = cons.newInstance(null);
-			mPluginLife = (IActivityLifeCircle) instance;
-			Log.d(TAG, "instance = " + instance);
+			mPluginClass = classLoader.loadClass(className);
+			Constructor<?> cons = mPluginClass.getConstructor();
+			mPluginInstance = cons.newInstance(new Object[]{});
+			Log.d(TAG, "instance = " + mPluginInstance);
+			Log.d(TAG, "instance = " + (mPluginInstance instanceof IActivityLifeCircle));
 
 			// make plugin using the context of host
-			Method setContextMethod = clazz.getMethod("setContext", Activity.class, String.class);
+			Method setContextMethod = mPluginClass.getMethod("setContext", Activity.class, String.class);
 			setContextMethod.setAccessible(true);
-			setContextMethod.invoke(instance, this, dexPath);
+			setContextMethod.invoke(mPluginInstance, this, dexPath);
 			Log.d(TAG, "setContextMethod = " + setContextMethod);
 
 			// start activity
-			Method onCreateMethod = clazz.getDeclaredMethod("onCreate", Bundle.class);
+			Method onCreateMethod = mPluginClass.getDeclaredMethod("onCreate", Bundle.class);
 			onCreateMethod.setAccessible(true);
-			onCreateMethod.invoke(instance, new Bundle());
+			onCreateMethod.invoke(mPluginInstance, new Bundle());
 			Log.d(TAG, "onCreateMethod = " + onCreateMethod);
 		} catch (Exception e) {
 			Log.e(TAG, "load class error: " + e);
@@ -126,56 +126,84 @@ public class ProxyActivity extends Activity {
 	
 	@Override
 	protected void onStart() {
-		if (mPluginLife == null) {
-			super.onStart();
-		}else{
-			mPluginLife.callOnStart();
-		}
+		super.onStart();
+		try {
+			Method method = mPluginClass.getDeclaredMethod("onStart");
+			method.setAccessible(true);
+			method.invoke(mPluginInstance);
+		} catch (Exception e) {
+			Log.w(TAG, ""+e);
+		} 
 	}
 	
 	@Override
 	protected void onRestart() {
-		if (mPluginLife == null) {
-			super.onRestart();
-		}else{
-			mPluginLife.callOnRestart();
-		}
+		super.onRestart();
+		try {
+			Method method = mPluginClass.getDeclaredMethod("onRestart");
+			method.setAccessible(true);
+			method.invoke(mPluginInstance);
+		} catch (Exception e) {
+			Log.w(TAG, ""+e);
+		} 
 	}
-	
+
 	@Override
 	protected void onResume() {
-		if (mPluginLife == null) {
-			super.onResume();
-		}else{
-			mPluginLife.callOnResume();
-		}
+		super.onResume();
+		try {
+			Method method = mPluginClass.getDeclaredMethod("onResume");
+			method.setAccessible(true);
+			method.invoke(mPluginInstance);
+		} catch (Exception e) {
+			Log.w(TAG, ""+e);
+		} 
 	}
 	
 	@Override
 	protected void onPause() {
-		if (mPluginLife == null) {
-			super.onPause();
-		}else{
-			mPluginLife.callOnPause();
-		}
+		super.onPause();
+		try {
+			Method method = mPluginClass.getDeclaredMethod("onPause");
+			method.setAccessible(true);
+			method.invoke(mPluginInstance);
+		} catch (Exception e) {
+			Log.w(TAG, ""+e);
+		} 
 	}
-	
 	@Override
 	protected void onStop() {
-		if (mPluginLife == null) {
-			super.onStop();
-		}else{
-			mPluginLife.callOnStop();
-		}
+		super.onStop();
+		try {
+			Method method = mPluginClass.getDeclaredMethod("onStop");
+			method.setAccessible(true);
+			method.invoke(mPluginInstance);
+		} catch (Exception e) {
+			Log.w(TAG, ""+e);
+		} 
 	}
 	
 	@Override
 	protected void onDestroy() {
-		if (mPluginLife == null) {
-			super.onDestroy();
-		}else{
-			mPluginLife.callOnDestory();
-		}
+		super.onDestroy();
+		try {
+			Method method = mPluginClass.getDeclaredMethod("onDestroy");
+			method.setAccessible(true);
+			method.invoke(mPluginInstance);
+		} catch (Exception e) {
+			Log.w(TAG, ""+e);
+		} 
 	}
 	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		try{
+			Method method = mPluginClass.getDeclaredMethod("onActivityResult", int.class, int.class, Intent.class);
+			method.setAccessible(true);
+			method.invoke(mPluginInstance, requestCode, resultCode, data);
+		}catch(Exception e){
+			Log.w(TAG, ""+e);
+		}
+	}
 }

@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 
 import com.example.pluginlib.IActivityLifeCircle;
 
+
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.ComponentName;
@@ -16,7 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
-public class BasePluginActivity extends Activity implements IActivityLifeCircle{
+public class BasePluginActivity extends Activity{
 
 	protected Activity mContext;
 	private static final String PROXY_ACTION = "com.example.dynamicloader.ProxyActivity";
@@ -163,74 +164,66 @@ public class BasePluginActivity extends Activity implements IActivityLifeCircle{
 
 	@Override
 	protected void onResume() {
-		if (mInstrumentation == null) {
+		if (mContext == this) {
 			super.onResume();
-		} else {
-			mInstrumentation.callActivityOnResume(mContext);
-		}
+		} 
 	}
 
 	@Override
 	protected void onPause() {
-		if (mInstrumentation == null) {
+		if (mContext == this) {
 			super.onPause();
-		} else {
-			mInstrumentation.callActivityOnPause(mContext);
-		}
+		} 
 	}
 
 	@Override
 	protected void onStop() {
-		if (mInstrumentation == null) {
+		if (mContext == this) {
 			super.onStop();
-		} else {
-			mInstrumentation.callActivityOnStop(mContext);
 		}
 	}
 
 	@Override
 	protected void onDestroy() {
-		if (mInstrumentation == null) {
+		if (mContext == this) {
 			super.onDestroy();
-		} else {
-			mInstrumentation.callActivityOnDestroy(mContext);
-		}
+		} 
 	}
 
-	@Override
-	public void callOnDestory() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void callOnPause() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void callOnRestart() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void callOnResume() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void callOnStart() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void callOnStop() {
-		// TODO Auto-generated method stub
-		
-	}
+//	@Override
+//	public void callOnDestory() {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	@Override
+//	public void callOnPause() {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	@Override
+//	public void callOnRestart() {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	@Override
+//	public void callOnResume() {
+//		// TODO Auto-generated method stub
+//		onResume();
+//	}
+//
+//	@Override
+//	public void callOnStart() {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	@Override
+//	public void callOnStop() {
+//		// TODO Auto-generated method stub
+//		
+//	}
 
 }

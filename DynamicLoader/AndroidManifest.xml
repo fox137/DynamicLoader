@@ -30,8 +30,14 @@
             </intent-filter>
         </activity>
 
+        <service android:name="com.example.dynamicloader.ProxyService" >
+            <intent-filter>
+                <action android:name="com.example.dynamicloader.ProxyService" />
+            </intent-filter>
+        </service>
     </application>
-        <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-        <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 </manifest>
