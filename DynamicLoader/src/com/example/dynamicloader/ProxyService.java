@@ -51,6 +51,11 @@ public class ProxyService extends Service {
 			setContextMethod.setAccessible(true);
 			setContextMethod.invoke(mPluginInstance, this);
 			Log.d(TAG, "setContextMethod = " + setContextMethod);
+			
+			Method oncreateMethod = mPluginClass.getDeclaredMethod("onCreate");
+			oncreateMethod.setAccessible(true);
+			oncreateMethod.invoke(mPluginInstance);
+			Log.d(TAG, "onCreateMethod = " + oncreateMethod);
 
 		} catch (Exception e) {
 			Log.e(TAG, "load class error: " + e);
