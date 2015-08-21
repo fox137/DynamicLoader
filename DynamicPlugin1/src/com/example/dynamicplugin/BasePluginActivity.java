@@ -1,9 +1,11 @@
-package com.example.dynamicplugin1;
+package com.example.dynamicplugin;
 
 import java.lang.reflect.Method;
 
-import com.example.pluginlib.IActivityLifeCircle;
 
+
+
+import com.example.dynamicloader.lifecircle.IActivityLifecircle;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -17,7 +19,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
-public class BasePluginActivity extends Activity{
+public class BasePluginActivity extends Activity implements IActivityLifecircle{
 
 	protected Activity mContext;
 	private static final String PROXY_ACTION = "com.example.dynamicloader.ProxyActivity";
@@ -188,6 +190,48 @@ public class BasePluginActivity extends Activity{
 		if (mContext == this) {
 			super.onDestroy();
 		} 
+	}
+//
+//	@Override
+//	public void callOnDestory() {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	@Override
+//	public void callOnPause() {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	@Override
+//	public void callOnRestart() {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	@Override
+//	public void callOnResume() {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	@Override
+//	public void callOnStart() {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	@Override
+//	public void callOnStop() {
+//		// TODO Auto-generated method stub
+//		
+//	}
+
+	@Override
+	public void callOnResume() {
+		// TODO Auto-generated method stub
+		Log.d("xufeng", "callOnResume plugin");
 	}
 
 //	@Override

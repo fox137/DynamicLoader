@@ -29,8 +29,10 @@ public class MainActivity extends Activity implements OnClickListener{
 
 
 	private void load1() {
+//		String pluginPath = Environment.getExternalStorageDirectory() +
+//				File.separator + "dl" + File.separator + "Plugin.apk";
 		String pluginPath = Environment.getExternalStorageDirectory() +
-				File.separator + "dl" + File.separator + "DynamicPlugin1.apk";
+		File.separator + "dl" + File.separator + "DynamicPlugin.apk";
 		Intent intent = new Intent(ProxyActivity.ACTION);
 		intent.putExtra(ProxyActivity.EXTRA_DEXPATH, pluginPath);
 		startActivity(intent);

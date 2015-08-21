@@ -1,4 +1,4 @@
-package com.example.dynamicplugin1;
+package com.example.dynamicplugin;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.example.dynamicplugin.R;
 
 public class MainActivity extends BasePluginActivity implements OnClickListener{
 	

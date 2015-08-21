@@ -6,7 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import com.example.pluginlib.IActivityLifeCircle;
+import com.example.dynamicloader.lifecircle.IActivityLifecircle;
 
 import dalvik.system.DexClassLoader;
 import android.R.integer;
@@ -68,14 +68,17 @@ public class ProxyActivity extends Activity {
 
 	private void launchPluginActivity(String className, String dexPath, String libPath) {
 		loadResources(dexPath);
-		DexClassLoader classLoader = PluginManager.getManager().getClassLoader(this);
-
+//		DexClassLoader classLoader = PluginManager.getManager().getClassLoader(this);
+		ClassLoader cl= getClassLoader() ;
+	    DexClassLoader classLoader = new DexClassLoader(dexPath, getApplicationInfo().dataDir, null ,cl) ;  
+		File file = new File(dexPath);
+		Log.d("xufeng", "file exist = " + file.exists());
 		try {
 			mPluginClass = classLoader.loadClass(className);
 			Constructor<?> cons = mPluginClass.getConstructor();
 			mPluginInstance = cons.newInstance(new Object[]{});
 			Log.d(TAG, "instance = " + mPluginInstance);
-			Log.d(TAG, "instance = " + (mPluginInstance instanceof IActivityLifeCircle));
+			Log.d(TAG, "instance " + (mPluginInstance instanceof IActivityLifecircle));
 
 			// make plugin using the context of host
 			Method setContextMethod = mPluginClass.getMethod("setContext", Activity.class, String.class);
@@ -88,7 +91,11 @@ public class ProxyActivity extends Activity {
 			onCreateMethod.setAccessible(true);
 			onCreateMethod.invoke(mPluginInstance, new Bundle());
 			Log.d(TAG, "onCreateMethod = " + onCreateMethod);
-		} catch (Exception e) {
+		} 
+		catch (ClassNotFoundException e) {
+			Log.e(TAG, "load class error: " + e);
+		}
+		catch (Exception e) {
 			Log.e(TAG, "load class error: " + e);
 		}
 	}

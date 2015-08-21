@@ -1,7 +1,8 @@
-package com.example.dynamicplugin1;
+package com.example.dynamicplugin;
 
 import android.os.Bundle;
 import android.widget.TextView;
+import com.example.dynamicplugin.R;
 
 public class InnerActivity extends BasePluginActivity {
 	

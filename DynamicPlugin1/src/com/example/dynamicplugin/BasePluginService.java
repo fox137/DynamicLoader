@@ -1,4 +1,4 @@
-package com.example.dynamicplugin1;
+package com.example.dynamicplugin;
 
 import android.app.Service;
 import android.content.Intent;

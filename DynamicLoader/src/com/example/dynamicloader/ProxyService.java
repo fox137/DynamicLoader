@@ -3,7 +3,6 @@ package com.example.dynamicloader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-import com.example.pluginlib.IActivityLifeCircle;
 
 import dalvik.system.DexClassLoader;
 import android.app.Activity;
@@ -44,7 +43,7 @@ public class ProxyService extends Service {
 			Constructor<?> cons = mPluginClass.getConstructor();
 			mPluginInstance = cons.newInstance(new Object[] {});
 			Log.d(TAG, "instance = " + mPluginInstance);
-			Log.d(TAG, "instance = " + (mPluginInstance instanceof IActivityLifeCircle));
+//			Log.d(TAG, "instance = " + (mPluginInstance instanceof IActivityLifeCircle));
 
 			// make plugin using the context of host
 			Method setContextMethod = mPluginClass.getMethod("setContext", Service.class);
