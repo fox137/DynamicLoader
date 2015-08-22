@@ -6,7 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import com.example.dynamicloader.lifecircle.IActivityLifecircle;
+import com.example.dynamicloader.lifecircle.IActivityLifeCircle;
 
 import dalvik.system.DexClassLoader;
 import android.R.integer;
@@ -34,68 +34,44 @@ public class ProxyActivity extends Activity {
 	public static final String TAG = "ProxyActivity";
 	public static final String ACTION = "com.example.dynamicloader.ProxyActivity";
 	public static final String EXTRA_DEXPATH = "dexpath";
-	public static final String EXTRA_INNERCLASS = "class";
+	public static final String EXTRA_CLASS = "classname";
 	public static final String EXTRA_LIBPATH = "libpath";
 
 	private AssetManager mAssetManager;
 	private Resources mResources;
 	private Theme mTheme;
-	private Object mPluginInstance;
+	private IActivityLifeCircle mPluginInstance;
 	private Class<?> mPluginClass;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		String dexPath = getIntent().getStringExtra(EXTRA_DEXPATH);
-		String clsName = getIntent().getStringExtra(EXTRA_INNERCLASS);
+		String clsName = getIntent().getStringExtra(EXTRA_CLASS);
 		String libPath = getIntent().getStringExtra(EXTRA_LIBPATH);
-		if (TextUtils.isEmpty(clsName)) {
-			// for host to start activity
-			launchPluginActivity(dexPath);
-		} else {
-			// for plugin to start inner activity
-			launchPluginActivity(clsName, dexPath, libPath);
-		}
+		Log.i(TAG, "launch dexPath=" + dexPath + ", clsName=" + clsName + ", libPath=" + libPath);
+		launchPluginActivity(clsName, dexPath, libPath);
 	}
 
-	private void launchPluginActivity(String apkPath) {
-		PackageInfo pi = this.getPackageManager().getPackageArchiveInfo(apkPath, PackageManager.GET_ACTIVITIES);
-		String atName = pi.activities[0].name;
-		String libDir = pi.applicationInfo.nativeLibraryDir;
-		Log.d(TAG, "launchPluginActivity apkPath=" + apkPath + ", activityname=" + atName + ", libdir=" + libDir);
-		launchPluginActivity(atName, apkPath, libDir);
-	}
+//	private void launchPluginActivity(String apkPath) {
+//		PackageInfo pi = this.getPackageManager().getPackageArchiveInfo(apkPath, PackageManager.GET_ACTIVITIES);
+//		String atName = pi.activities[0].name;
+//		String libDir = pi.applicationInfo.nativeLibraryDir;
+//		Log.d(TAG, "launchPluginActivity apkPath=" + apkPath + ", activityname=" + atName + ", libdir=" + libDir);
+//		launchPluginActivity(atName, apkPath, libDir);
+//	}
 
 	private void launchPluginActivity(String className, String dexPath, String libPath) {
 		loadResources(dexPath);
-//		DexClassLoader classLoader = PluginManager.getManager().getClassLoader(this);
-		ClassLoader cl= getClassLoader() ;
-	    DexClassLoader classLoader = new DexClassLoader(dexPath, getApplicationInfo().dataDir, null ,cl) ;  
-		File file = new File(dexPath);
-		Log.d("xufeng", "file exist = " + file.exists());
+		DexClassLoader classLoader = PluginManager.getManager().getClassLoader(this, dexPath);
 		try {
 			mPluginClass = classLoader.loadClass(className);
 			Constructor<?> cons = mPluginClass.getConstructor();
-			mPluginInstance = cons.newInstance(new Object[]{});
+			mPluginInstance = (IActivityLifeCircle) cons.newInstance(new Object[] {});
 			Log.d(TAG, "instance = " + mPluginInstance);
-			Log.d(TAG, "instance " + (mPluginInstance instanceof IActivityLifecircle));
-
-			// make plugin using the context of host
-			Method setContextMethod = mPluginClass.getMethod("setContext", Activity.class, String.class);
-			setContextMethod.setAccessible(true);
-			setContextMethod.invoke(mPluginInstance, this, dexPath);
-			Log.d(TAG, "setContextMethod = " + setContextMethod);
-
-			// start activity
-			Method onCreateMethod = mPluginClass.getDeclaredMethod("onCreate", Bundle.class);
-			onCreateMethod.setAccessible(true);
-			onCreateMethod.invoke(mPluginInstance, new Bundle());
-			Log.d(TAG, "onCreateMethod = " + onCreateMethod);
-		} 
-		catch (ClassNotFoundException e) {
-			Log.e(TAG, "load class error: " + e);
-		}
-		catch (Exception e) {
+			mPluginInstance.setContext(this, dexPath);
+			mPluginInstance.callOnCreate(new Bundle());
+		} catch (Exception e) {
 			Log.e(TAG, "load class error: " + e);
 		}
 	}
@@ -129,88 +105,46 @@ public class ProxyActivity extends Activity {
 	public Theme getTheme() {
 		return mTheme == null ? super.getTheme() : mTheme;
 	}
-	
-	
+
 	@Override
 	protected void onStart() {
 		super.onStart();
-		try {
-			Method method = mPluginClass.getDeclaredMethod("onStart");
-			method.setAccessible(true);
-			method.invoke(mPluginInstance);
-		} catch (Exception e) {
-			Log.w(TAG, ""+e);
-		} 
+		mPluginInstance.callOnStart();
 	}
-	
+
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		try {
-			Method method = mPluginClass.getDeclaredMethod("onRestart");
-			method.setAccessible(true);
-			method.invoke(mPluginInstance);
-		} catch (Exception e) {
-			Log.w(TAG, ""+e);
-		} 
+		mPluginInstance.callOnRestart();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		try {
-			Method method = mPluginClass.getDeclaredMethod("onResume");
-			method.setAccessible(true);
-			method.invoke(mPluginInstance);
-		} catch (Exception e) {
-			Log.w(TAG, ""+e);
-		} 
+		mPluginInstance.callOnResume();
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
-		try {
-			Method method = mPluginClass.getDeclaredMethod("onPause");
-			method.setAccessible(true);
-			method.invoke(mPluginInstance);
-		} catch (Exception e) {
-			Log.w(TAG, ""+e);
-		} 
+		mPluginInstance.callOnPause();
 	}
+
 	@Override
 	protected void onStop() {
 		super.onStop();
-		try {
-			Method method = mPluginClass.getDeclaredMethod("onStop");
-			method.setAccessible(true);
-			method.invoke(mPluginInstance);
-		} catch (Exception e) {
-			Log.w(TAG, ""+e);
-		} 
+		mPluginInstance.callOnStop();
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		try {
-			Method method = mPluginClass.getDeclaredMethod("onDestroy");
-			method.setAccessible(true);
-			method.invoke(mPluginInstance);
-		} catch (Exception e) {
-			Log.w(TAG, ""+e);
-		} 
+		mPluginInstance.callOnDestory();
 	}
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		try{
-			Method method = mPluginClass.getDeclaredMethod("onActivityResult", int.class, int.class, Intent.class);
-			method.setAccessible(true);
-			method.invoke(mPluginInstance, requestCode, resultCode, data);
-		}catch(Exception e){
-			Log.w(TAG, ""+e);
-		}
+		mPluginInstance.callOnActivityResult(requestCode, resultCode, data);
 	}
 }

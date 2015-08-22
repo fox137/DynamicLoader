@@ -8,6 +8,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -17,6 +18,10 @@ import android.view.View.OnClickListener;
  *
  */
 public class MainActivity extends Activity implements OnClickListener{
+
+	private static final String TAG = "MainActivity";
+
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,13 +33,21 @@ public class MainActivity extends Activity implements OnClickListener{
 	
 
 
-	private void load1() {
+	private void loadActivity() {
 //		String pluginPath = Environment.getExternalStorageDirectory() +
 //				File.separator + "dl" + File.separator + "Plugin.apk";
-		String pluginPath = Environment.getExternalStorageDirectory() +
-		File.separator + "dl" + File.separator + "DynamicPlugin.apk";
+//		String pluginPath = Environment.getExternalStorageDirectory() +
+//		File.separator + "dl" + File.separator + "DynamicPlugin.apk";
+		
+		PackageInfo pi = this.getPackageManager().getPackageArchiveInfo(PluginManager.PLUGIN_PATH1, PackageManager.GET_ACTIVITIES);
+		String atName = pi.activities[0].name;
+		String libDir = pi.applicationInfo.nativeLibraryDir;
+		Log.d(TAG,  " activityname=" + atName + ", libdir=" + libDir);
+		
 		Intent intent = new Intent(ProxyActivity.ACTION);
-		intent.putExtra(ProxyActivity.EXTRA_DEXPATH, pluginPath);
+		intent.putExtra(ProxyActivity.EXTRA_DEXPATH, PluginManager.PLUGIN_PATH1);
+		intent.putExtra(ProxyActivity.EXTRA_CLASS, atName);
+		intent.putExtra(ProxyActivity.EXTRA_LIBPATH, libDir);
 		startActivity(intent);
 	}
 	
@@ -49,7 +62,7 @@ public class MainActivity extends Activity implements OnClickListener{
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btn_load1:
-			load1();
+			loadActivity();
 			break;
 		case R.id.btn_load_service1:
 			loadService1();
@@ -65,7 +78,7 @@ public class MainActivity extends Activity implements OnClickListener{
 
 	private void loadService1() {
 		String pluginPath = Environment.getExternalStorageDirectory() +
-				File.separator + "dl" + File.separator + "DynamicPlugin1.apk";
+				File.separator + "dl" + File.separator + "DynamicPlugin.apk";
 		PackageInfo pi = this.getPackageManager().getPackageArchiveInfo(pluginPath, PackageManager.GET_SERVICES);
 		String sName = pi.services[0].name;
 		Intent intent = new Intent(ProxyService.ACTION);

@@ -21,6 +21,7 @@ public class MainActivity extends BasePluginActivity implements OnClickListener{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_plugin_main);
 		findViewById(R.id.pl_btn_jumpinner).setOnClickListener(this);
+		findViewById(R.id.pl_btn_startservice).setOnClickListener(this);
 	}
 
 	@Override
@@ -29,6 +30,10 @@ public class MainActivity extends BasePluginActivity implements OnClickListener{
 		switch (v.getId()) {
 		case R.id.pl_btn_jumpinner:
 			startActivity(new Intent(mContext, InnerActivity.class));
+			break;
+			
+		case R.id.pl_btn_startservice:
+			startService(new Intent("com.example.dynamicplugin.MainService"));
 			break;
 
 		default:

@@ -1,11 +1,13 @@
 package com.example.dynamicplugin;
 
+import com.example.dynamicloader.lifecircle.IServiceLifeCircle;
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-public class BasePluginService extends Service {
+public class BasePluginService extends Service implements IServiceLifeCircle{
 
 	private final String TAG = "BasePluginService";
 	private Service mContext;
@@ -13,6 +15,7 @@ public class BasePluginService extends Service {
 	public BasePluginService() {
 	}
 
+	@Override
 	public void setContext(Service service) {
 		mContext = service;
 	}
@@ -59,6 +62,57 @@ public class BasePluginService extends Service {
 		if (mContext == this) {
 			super.onDestroy();
 		}
+	}
+	
+	
+	//////////////////////// called by proxy service /////////////////////////
+
+	@Override
+	public IBinder callOnBind(Intent intent) {
+		Log.i(TAG, "callOnBind");
+		return onBind(intent);
+	}
+
+	@Override
+	public void callOnCreate() {
+		Log.i(TAG, "callOnCreate");
+		onCreate();
+	}
+
+	@Override
+	public void callOnDestroy() {
+		Log.i(TAG, "callOnDestroy");
+		onDestroy();
+	}
+
+	@Override
+	public void callOnLowMemory() {
+		Log.i(TAG, "callOnLowMemory");
+		onLowMemory();
+	}
+
+	@Override
+	public void callOnRebind(Intent intent) {
+		Log.i(TAG, "callOnRebind " + intent);
+		onRebind(intent);
+	}
+
+	@Override
+	public int callOnStartCommand(Intent intent, int flags, int startId) {
+		Log.i(TAG, "callOnStartCommand intent=" + intent + ", flags=" + flags + ", startId=" + startId);
+		return onStartCommand(intent, flags, startId);
+	}
+
+	@Override
+	public void callOnTrimMemory(int level) {
+		Log.i(TAG, "callOnTrimMemory " + level);
+		onTrimMemory(level);
+	}
+
+	@Override
+	public boolean callOnUnbind(Intent intent) {
+		Log.i(TAG, "callOnUnbind " + intent);
+		return onUnbind(intent);
 	}
 
 }

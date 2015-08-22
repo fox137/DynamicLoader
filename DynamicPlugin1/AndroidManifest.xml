@@ -25,7 +25,7 @@
 
         <service android:name="com.example.dynamicplugin.MainService" >
             <intent-filter>
-                <action android:name="com.example.dynamicplugin1.MainService" />
+                <action android:name="com.example.dynamicplugin.MainService" />
             </intent-filter>
         </service>
     </application>
