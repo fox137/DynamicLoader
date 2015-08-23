@@ -6,6 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import com.example.dynamicloader.data.PluginResource;
 import com.example.dynamicloader.lifecircle.IActivityLifeCircle;
 
 import dalvik.system.DexClassLoader;
@@ -37,73 +38,50 @@ public class ProxyActivity extends Activity {
 	public static final String EXTRA_CLASS = "classname";
 	public static final String EXTRA_LIBPATH = "libpath";
 
-	private AssetManager mAssetManager;
-	private Resources mResources;
-	private Theme mTheme;
 	private IActivityLifeCircle mPluginInstance;
 	private Class<?> mPluginClass;
+	private PluginResource mResource;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		String dexPath = getIntent().getStringExtra(EXTRA_DEXPATH);
+//		String dexPath = getIntent().getStringExtra(EXTRA_DEXPATH);
 		String clsName = getIntent().getStringExtra(EXTRA_CLASS);
-		String libPath = getIntent().getStringExtra(EXTRA_LIBPATH);
-		Log.i(TAG, "launch dexPath=" + dexPath + ", clsName=" + clsName + ", libPath=" + libPath);
-		launchPluginActivity(clsName, dexPath, libPath);
+//		String libPath = getIntent().getStringExtra(EXTRA_LIBPATH);
+		Log.i(TAG, "launch clsName=" + clsName );
+		launchPluginActivity(clsName/*, dexPath, libPath*/);
 	}
 
-//	private void launchPluginActivity(String apkPath) {
-//		PackageInfo pi = this.getPackageManager().getPackageArchiveInfo(apkPath, PackageManager.GET_ACTIVITIES);
-//		String atName = pi.activities[0].name;
-//		String libDir = pi.applicationInfo.nativeLibraryDir;
-//		Log.d(TAG, "launchPluginActivity apkPath=" + apkPath + ", activityname=" + atName + ", libdir=" + libDir);
-//		launchPluginActivity(atName, apkPath, libDir);
-//	}
-
-	private void launchPluginActivity(String className, String dexPath, String libPath) {
-		loadResources(dexPath);
-		DexClassLoader classLoader = PluginManager.getManager().getClassLoader(this, dexPath);
+	private void launchPluginActivity(String className/*, String dexPath, String libPath*/) {
+//		mResource = PluginManager.getManager().loadResources(this, dexPath);
+		mResource = PluginManager.getManager().getPlugin(this, PluginManager.PATH_PLUGIN_A).getResource();
+		DexClassLoader classLoader = PluginManager.getManager().getPlugin(this, PluginManager.PATH_PLUGIN_A).getClassLoader();
 		try {
 			mPluginClass = classLoader.loadClass(className);
 			Constructor<?> cons = mPluginClass.getConstructor();
 			mPluginInstance = (IActivityLifeCircle) cons.newInstance(new Object[] {});
 			Log.d(TAG, "instance = " + mPluginInstance);
-			mPluginInstance.setContext(this, dexPath);
+			mPluginInstance.setContext(this, PluginManager.PATH_PLUGIN_A);
 			mPluginInstance.callOnCreate(new Bundle());
 		} catch (Exception e) {
 			Log.e(TAG, "load class error: " + e);
 		}
 	}
 
-	protected void loadResources(String dexPath) {
-		try {
-			AssetManager assetManager = AssetManager.class.newInstance();
-			Method addAssetPath = assetManager.getClass().getMethod("addAssetPath", String.class);
-			addAssetPath.invoke(assetManager, dexPath);
-			mAssetManager = assetManager;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		Resources superRes = super.getResources();
-		mResources = new Resources(mAssetManager, superRes.getDisplayMetrics(), superRes.getConfiguration());
-		mTheme = mResources.newTheme();
-		mTheme.setTo(super.getTheme());
-	}
-
+	
 	@Override
 	public AssetManager getAssets() {
-		return mAssetManager == null ? super.getAssets() : mAssetManager;
+		return mResource == null ? super.getAssets() : mResource.assetManager;
 	}
 
 	@Override
 	public Resources getResources() {
-		return mResources == null ? super.getResources() : mResources;
+		return mResource == null ? super.getResources() : mResource.resources;
 	}
 
 	@Override
 	public Theme getTheme() {
-		return mTheme == null ? super.getTheme() : mTheme;
+		return mResource == null ? super.getTheme() : mResource.theme;
 	}
 
 	@Override

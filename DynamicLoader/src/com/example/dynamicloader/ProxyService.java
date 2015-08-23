@@ -41,7 +41,7 @@ public class ProxyService extends Service {
 
 	private void launchPluginService(String className) {
 		try {
-			DexClassLoader classLoader = PluginManager.getManager().getClassLoader(this, PluginManager.PLUGIN_PATH1);
+			DexClassLoader classLoader = PluginManager.getManager().getPlugin(this, PluginManager.PATH_PLUGIN_A).getClassLoader();
 			mPluginClass = classLoader.loadClass(className);
 			Constructor<?> cons = mPluginClass.getConstructor();
 			mPluginInstance = (IServiceLifeCircle) cons.newInstance(new Object[] {});

@@ -3,5 +3,6 @@
 
     <string name="app_name">DynamicPlugin</string>
     <string name="hello_world">Hello world!</string>
+    <string name="plugin_inner">plugin_inner</string>
 
 </resources>
