@@ -18,8 +18,8 @@ import android.util.Log;
 
 public class ProxyService extends Service {
 
-	public static final String ACTION = "com.example.dynamicloader.ProxyService";
 	private static final String TAG = "ProxyService";
+	public static final String ACTION = "com.example.dynamicloader.ProxyService";
 	public static final String EXTRA_CLASSNAME = "classname";
 	public static final String EXTRA_ACTION = "action";
 	public static final String EXTRA_DEXPATH = "dexpath";
@@ -41,10 +41,30 @@ public class ProxyService extends Service {
 			Log.e(TAG, "intent error");
 			return;
 		}
-		if (TextUtils.isEmpty(className) && !TextUtils.isEmpty(action) ) {
-			className = PluginManager.getManager().getPlugin(this, dexPath).getComponent().getActivityByAction(action);
+		if (!TextUtils.isEmpty(dexPath) ) {
+			Log.i(TAG, "start plugin service dexPath=" + dexPath + ", clsName=" + className + ", action=" + action);
+			if (TextUtils.isEmpty(className) && !TextUtils.isEmpty(action) ) {
+				className = PluginManager.getManager().getPlugin(this, dexPath).getComponent().getActivityByAction(action);
+			}
+			launchPluginService(className, dexPath);
+		}else {
+			Log.i(TAG, "start host service clsName=" + className + ", action=" + action);
+			if (!TextUtils.isEmpty(action)) {
+				startService(new Intent(action));
+			}else {
+				try {
+					Intent i = new Intent(this, Class.forName(className));
+					startService(i);
+				} catch (ClassNotFoundException e) {
+					Log.e(TAG, ""+ e);
+				}
+			}
+			this.stopSelf();
 		}
-		launchPluginService(className, dexPath);
+//		if (TextUtils.isEmpty(className) && !TextUtils.isEmpty(action) ) {
+//			className = PluginManager.getManager().getPlugin(this, dexPath).getComponent().getActivityByAction(action);
+//		}
+//		launchPluginService(className, dexPath);
 	}
 
 	private void launchPluginService(String className, String path) {
@@ -71,37 +91,38 @@ public class ProxyService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		initClass(intent);
 		int result = super.onStartCommand(intent, flags, startId);
+		if(mPluginInstance == null) return result;
 		return mPluginInstance.callOnStartCommand(intent, flags, startId);
 	}
 
 	@Override
 	public void onDestroy() {
-		mPluginInstance.callOnDestroy();
+		if(mPluginInstance != null)		mPluginInstance.callOnDestroy();
 		super.onDestroy();
 	}
 
 	@Override
 	public boolean onUnbind(Intent intent) {
-		super.onUnbind(intent);
+		if(mPluginInstance == null)		return super.onUnbind(intent);
 		return mPluginInstance.callOnUnbind(intent);
 	}
 
 	@Override
 	public void onRebind(Intent intent) {
 		super.onRebind(intent);
-		mPluginInstance.callOnRebind(intent);
+		if(mPluginInstance != null)		mPluginInstance.callOnRebind(intent);
 	}
 
 	@Override
 	public void onLowMemory() {
 		super.onLowMemory();
-		mPluginInstance.callOnLowMemory();
+		if(mPluginInstance != null)		mPluginInstance.callOnLowMemory();
 	}
 
 	@Override
 	public void onTrimMemory(int level) {
 		super.onTrimMemory(level);
-		mPluginInstance.callOnTrimMemory(level);
+		if(mPluginInstance != null)		mPluginInstance.callOnTrimMemory(level);
 	}
 
 }
