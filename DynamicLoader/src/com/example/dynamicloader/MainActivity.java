@@ -2,6 +2,8 @@ package com.example.dynamicloader;
 
 import java.io.File;
 
+import com.example.dynamicloader.data.PluginComponent;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -29,11 +31,19 @@ public class MainActivity extends Activity implements OnClickListener {
 		initView();
 		PluginManager.getManager().initPlugin(this, PluginManager.PATH_PLUGIN_A);
 	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		PluginManager.getManager().releasePlugin(this, PluginManager.PATH_PLUGIN_A);
+	}
 
 	private void loadActivity() {
 		Intent intent = new Intent(ProxyActivity.ACTION);
 		intent.putExtra(ProxyActivity.EXTRA_CLASS,
-				PluginManager.getManager().getPlugin(this, PluginManager.PATH_PLUGIN_A).getActivity(0));
+				PluginManager.getManager().getPlugin(this, PluginManager.PATH_PLUGIN_A)
+						.getComponent().getActivityByAction(PluginComponent.ACTION_MAIN));
+		intent.putExtra(ProxyActivity.EXTRA_DEXPATH, PluginManager.PATH_PLUGIN_A);
 		startActivity(intent);
 	}
 
@@ -59,13 +69,13 @@ public class MainActivity extends Activity implements OnClickListener {
 	}
 
 	private void loadService1() {
-		String pluginPath = Environment.getExternalStorageDirectory() + File.separator + "dl" + File.separator
-				+ "DynamicPlugin.apk";
-		PackageInfo pi = this.getPackageManager().getPackageArchiveInfo(pluginPath, PackageManager.GET_SERVICES);
+		String pluginPath = Environment.getExternalStorageDirectory() + File.separator + "dl"
+				+ File.separator + "DynamicPlugin.apk";
+		PackageInfo pi = this.getPackageManager().getPackageArchiveInfo(pluginPath,
+				PackageManager.GET_SERVICES);
 		String sName = pi.services[0].name;
 		Intent intent = new Intent(ProxyService.ACTION);
-		intent.putExtra(ProxyService.EXTRA_CLASSNAME, PluginManager.getManager().getPlugin(this, PluginManager.PATH_PLUGIN_A).getService(0));
-		startService(intent);
+		intent.putExtra(ProxyActivity.EXTRA_DEXPATH, PluginManager.PATH_PLUGIN_A);
 
 	}
 }

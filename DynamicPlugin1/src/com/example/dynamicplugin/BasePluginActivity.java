@@ -18,6 +18,7 @@ public class BasePluginActivity extends Activity implements IActivityLifeCircle{
 	private static final String PROXY_SERVICE_ACTION = "com.example.dynamicloader.ProxyService";
 	protected static final String TAG = "BasePluginActivity";
 	private final String INTENT_CLASS = "classname";
+	private final String INTENT_ACTION = "action";
 	private final String EXTRA_DEXPATH = "dexpath";
 	private final String EXTRA_LIBPATH = "libpath";
 	private String mDexPath;
@@ -145,20 +146,7 @@ public class BasePluginActivity extends Activity implements IActivityLifeCircle{
 		if (mContext == this) {
 			super.startActivity(intent);
 		} else {
-			// start activity by proxy activity
-			Intent proxyIntent = new Intent(PROXY_ACTIVITY_ACTION);
-			if (intent.getAction() == null) {
-				// from new Intent(this, XXXActivity.class)
-				ComponentName cn = intent.getComponent();
-				proxyIntent.putExtra(INTENT_CLASS, cn.getClassName());
-				Log.d(TAG, "intent action = " + cn.getClassName());
-			} else {
-				// from new Intent(action)
-				proxyIntent.putExtra(INTENT_CLASS, intent.getAction());
-			}
-
-			proxyIntent.putExtra(EXTRA_DEXPATH, mDexPath);
-			mContext.startActivity(proxyIntent);
+			mContext.startActivity(genPluginIntent(intent));
 		}
 	}
 
@@ -168,21 +156,24 @@ public class BasePluginActivity extends Activity implements IActivityLifeCircle{
 		if (mContext == this) {
 			super.startActivityForResult(intent, requestCode);
 		} else {
-			// start activity by proxy activity
-			Intent proxyIntent = new Intent(PROXY_ACTIVITY_ACTION);
-			if (intent.getAction() == null) {
-				// from new Intent(this, XXXActivity.class)
-				ComponentName cn = intent.getComponent();
-				proxyIntent.putExtra(INTENT_CLASS, cn.getClassName());
-				Log.d(TAG, "intent action = " + cn.getClassName());
-			} else {
-				// from new Intent(action)
-				proxyIntent.putExtra(INTENT_CLASS, intent.getAction());
-			}
-
-			proxyIntent.putExtra(EXTRA_DEXPATH, mDexPath);
-			mContext.startActivityForResult(proxyIntent, requestCode);
+			mContext.startActivityForResult(genPluginIntent(intent), requestCode);
 		}
+	}
+	
+	private Intent genPluginIntent(Intent intent){
+		// start activity by proxy activity
+		Intent proxyIntent = new Intent(PROXY_ACTIVITY_ACTION);
+		if (intent.getAction() == null) {
+			// from new Intent(this, XXXActivity.class)
+			ComponentName cn = intent.getComponent();
+			proxyIntent.putExtra(INTENT_CLASS, cn.getClassName());
+			Log.d(TAG, "intent action = " + cn.getClassName());
+		} else {
+			// from new Intent(action)
+			proxyIntent.putExtra(INTENT_ACTION, intent.getAction());
+		}
+		proxyIntent.putExtra(EXTRA_DEXPATH, mDexPath);
+		return proxyIntent;
 	}
 	
 	@Override

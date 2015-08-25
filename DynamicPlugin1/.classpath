@@ -5,6 +5,6 @@
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="lib" path="E:/work/DynamicLoader/Lifecircle.jar"/>
+	<classpathentry kind="lib" path="/home/xufeng/workspace/DynamicLoader/Lifecircle.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

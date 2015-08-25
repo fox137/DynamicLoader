@@ -1,40 +1,89 @@
 package com.example.dynamicloader.data;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import com.example.dynamicloader.data.PluginComponentInfo.PluginActivityInfo;
+import com.example.dynamicloader.data.PluginComponentInfo.PluginProviderInfo;
+import com.example.dynamicloader.data.PluginComponentInfo.PluginServiceInfo;
+
+import dalvik.system.DexClassLoader;
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
+import android.content.IntentFilter;
+import android.util.Log;
 
+/**
+ * Components Operation 
+ * @author xufeng
+ *
+ */
 public class PluginComponent {
-	public List<String> activityList;
-	public List<String> recieverList;
-	public List<String> serviceList;
+	public static final String ACTION_MAIN = "android.intent.action.MAIN";
+
+	private static final String TAG = "PluginComponent";
+
+	public List<PluginActivityInfo> mActivities = new ArrayList<PluginActivityInfo>();
+	public List<PluginActivityInfo> mReceivers = new ArrayList<PluginActivityInfo>();
+	public List<PluginServiceInfo> mServices = new ArrayList<PluginServiceInfo>();
+	public List<PluginProviderInfo> mProviders = new ArrayList<PluginProviderInfo>();
 	
-	public PluginComponent(Context context, String path) {
-		initComponents(context, path);
+	public Set<BroadcastReceiver> mRegisterReceivers = new HashSet<BroadcastReceiver>();
+
+
+	public PluginComponent(Context context, String path, DexClassLoader classLoader) {
+		initComponents(context, path, classLoader);
 	}
 
-	private void initComponents(Context context, String path) {
-		initActivities(context, path);
-		initServices(context, path);
+
+	private void initComponents(Context context, String path, DexClassLoader classLoader) {
+		PackageParser pp = new PackageParser();
+		pp.parse(context, path);
+		mActivities = pp.getActivities();
+		mReceivers = pp.getReceivers();
+		mServices = pp.getServices();
+		mProviders = pp.getProviders();
+		registerReceivers(context.getApplicationContext(), classLoader);
+	}
+
+	private void registerReceivers(Context context, DexClassLoader classLoader) {
+		try {
+			for (PluginActivityInfo pi : mReceivers) {
+				Class clazz = classLoader.loadClass(pi.name);
+				BroadcastReceiver receiver = (BroadcastReceiver) clazz.newInstance();
+				for (IntentFilter filter : pi.intents) {
+					for (int j = 0; j < filter.countActions(); j++) {
+						context.registerReceiver(receiver, filter);
+						mRegisterReceivers.add(receiver);
+						Log.i(TAG, "registerReceiver " + pi.name + ", " + filter);
+					}
+				}
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "" + e);
+		}
 	}
 	
-	private void initActivities(Context context, String path) {
-		activityList = new ArrayList<String>();
-		PackageInfo pi = context.getPackageManager().getPackageArchiveInfo(path, PackageManager.GET_ACTIVITIES);
-		for (int i = 0; i < pi.activities.length; i++) {
-			activityList.add(pi.activities[i].name);
+	public void unregisterReceivers(Context context) {
+		for (BroadcastReceiver receiver : mRegisterReceivers) {
+			context.unregisterReceiver(receiver);
 		}
 	}
 
-	private void initServices(Context context, String path) {
-		serviceList = new ArrayList<String>();
-		PackageInfo pi = context.getPackageManager().getPackageArchiveInfo(path, PackageManager.GET_SERVICES);
-		for (int i = 0; i < pi.services.length; i++) {
-			serviceList.add(pi.services[i].name);
+	public String getActivityByAction(String action) {
+		for (PluginActivityInfo pi : mActivities) {
+			for (IntentFilter filter : pi.intents) {
+				for (int j = 0; j < filter.countActions(); j++) {
+					if (filter.getAction(j).equals(action)) {
+						return pi.name;
+					}
+				}
+			}
 		}
+		return "";
 	}
+
 
 }

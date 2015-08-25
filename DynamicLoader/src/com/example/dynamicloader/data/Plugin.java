@@ -16,7 +16,6 @@ public class Plugin {
 	private String mLibPath;
 	private PluginResource mResource;
 	private DexClassLoader mClassLoader;
-	private String mBootActivity;
 	private PluginComponent mComponent;
 
 	public Plugin(Context context, String path) {
@@ -24,12 +23,12 @@ public class Plugin {
 		
 		initClassLoader(context);
 		initResources(context);
-		initComponent(context);
+		initComponent(context, mClassLoader);
 	}
 
 
-	private void initComponent(Context context) {
-		mComponent = new PluginComponent(context, mDexPath);
+	private void initComponent(Context context, DexClassLoader classLoader) {
+		mComponent = new PluginComponent(context, mDexPath, classLoader);
 	}
 
 
@@ -58,9 +57,6 @@ public class Plugin {
 	}
 
 
-	public String getActivity(int index) {
-		return mComponent.activityList.get(index);
-	}
 
 	public DexClassLoader getClassLoader() {
 		return mClassLoader;
@@ -70,8 +66,14 @@ public class Plugin {
 		return mResource;
 	}
 
-
-	public String getService(int index) {
-		return mComponent.serviceList.get(index);
+	public PluginComponent getComponent(){
+		return mComponent;
 	}
+
+
+	public void release(Context context) {
+		mComponent.unregisterReceivers(context.getApplicationContext());
+		
+	}
+
 }

@@ -21,6 +21,8 @@ public class ProxyService extends Service {
 	public static final String ACTION = "com.example.dynamicloader.ProxyService";
 	private static final String TAG = "ProxyService";
 	public static final String EXTRA_CLASSNAME = "classname";
+	public static final String EXTRA_ACTION = "action";
+	public static final String EXTRA_DEXPATH = "dexpath";
 	private Class<?> mPluginClass;
 	private IServiceLifeCircle mPluginInstance;
 
@@ -32,21 +34,27 @@ public class ProxyService extends Service {
 		if (intent == null || mPluginInstance != null) {
 			return;
 		}
+		String dexPath = intent.getStringExtra(EXTRA_DEXPATH);
 		String className = intent.getStringExtra(EXTRA_CLASSNAME);
-		if (TextUtils.isEmpty(className)) {
+		String action = intent.getStringExtra(EXTRA_ACTION);
+		if (TextUtils.isEmpty(className) && TextUtils.isEmpty(action) ) {
+			Log.e(TAG, "intent error");
 			return;
 		}
-		launchPluginService(className);
+		if (TextUtils.isEmpty(className) && !TextUtils.isEmpty(action) ) {
+			className = PluginManager.getManager().getPlugin(this, dexPath).getComponent().getActivityByAction(action);
+		}
+		launchPluginService(className, dexPath);
 	}
 
-	private void launchPluginService(String className) {
+	private void launchPluginService(String className, String path) {
 		try {
-			DexClassLoader classLoader = PluginManager.getManager().getPlugin(this, PluginManager.PATH_PLUGIN_A).getClassLoader();
+			DexClassLoader classLoader = PluginManager.getManager().getPlugin(this, path).getClassLoader();
 			mPluginClass = classLoader.loadClass(className);
 			Constructor<?> cons = mPluginClass.getConstructor();
 			mPluginInstance = (IServiceLifeCircle) cons.newInstance(new Object[] {});
 			Log.d(TAG, "instance = " + mPluginInstance);
-			mPluginInstance.setContext(this);
+			mPluginInstance.setContext(this, path);
 			mPluginInstance.callOnCreate();
 		} catch (Exception e) {
 			Log.e(TAG, "load class error: " + e);

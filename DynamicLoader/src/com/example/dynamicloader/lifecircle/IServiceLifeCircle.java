@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.IBinder;
 
 public interface IServiceLifeCircle {
-	void setContext(Service service);
+	void setContext(Service service, String dexPath);
 	IBinder callOnBind(Intent intent);
 	void callOnCreate();
 	int callOnStartCommand(Intent intent, int flags, int startId);

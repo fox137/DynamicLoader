@@ -18,6 +18,7 @@ import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 import dalvik.system.DexClassLoader;
 
@@ -45,8 +46,15 @@ public class PluginManager {
 	}
 	
 	public void initPlugin(Context context, String path){
-		Plugin plugin = new Plugin(context, PATH_PLUGIN_A);
+		Plugin plugin = new Plugin(context, path);
 		mPluginMap.put(PATH_PLUGIN_A, plugin);
+	}
+	
+	public void releasePlugin(Context context, String path){
+		Plugin plugin = mPluginMap.get(path);
+		if (plugin != null) {
+			plugin.release(context);
+		}
 	}
 
 	public Plugin getPlugin(Context context, String path){
