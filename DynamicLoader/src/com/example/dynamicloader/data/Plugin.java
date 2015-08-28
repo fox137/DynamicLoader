@@ -17,6 +17,7 @@ public class Plugin {
 	private PluginResource mResource;
 	private DexClassLoader mClassLoader;
 	private PluginComponent mComponent;
+	private PluginLib mLib;
 
 	public Plugin(Context context, String path) {
 		mDexPath = path;
@@ -24,6 +25,12 @@ public class Plugin {
 		initClassLoader(context);
 		initResources(context);
 		initComponent(context, mClassLoader);
+		initLib(context);
+	}
+
+
+	private void initLib(Context context) {
+		mLib = new PluginLib(context.getApplicationContext(), mDexPath);
 	}
 
 

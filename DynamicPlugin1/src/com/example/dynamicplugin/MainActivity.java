@@ -4,22 +4,16 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import com.example.dynamicplugin.R;
-import com.example.events.EventTest;
-import com.example.events.EventTestBack;
+import com.example.events.RequestEvent;
+import com.lenovo.vcs.weaverth.trade.utils.ProtectJni;
 
 import de.greenrobot.event.EventBus;
 
 public class MainActivity extends BasePluginActivity implements OnClickListener{
 	
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -27,6 +21,7 @@ public class MainActivity extends BasePluginActivity implements OnClickListener{
 		findViewById(R.id.pl_btn_jumpinner).setOnClickListener(this);
 		findViewById(R.id.pl_btn_startservice).setOnClickListener(this);
 		findViewById(R.id.pl_btn_event).setOnClickListener(this);
+		findViewById(R.id.pl_btn_loadso).setOnClickListener(this);
 	}
 
 	@Override
@@ -44,6 +39,9 @@ public class MainActivity extends BasePluginActivity implements OnClickListener{
 		case R.id.pl_btn_event:
 			postEvent();
 			break;
+		case R.id.pl_btn_loadso:
+			Log.i(TAG, "load so: " + ProtectJni.alpbk());
+			break;
 		default:
 			break;
 		}
@@ -51,7 +49,7 @@ public class MainActivity extends BasePluginActivity implements OnClickListener{
 	
 	private void postEvent() {
 		// TODO Auto-generated method stub
-		EventBus.getDefault().post(new EventTest("plugin"));
+		EventBus.getDefault().post(new RequestEvent<String>(1));
 	}
 
 	@Override
@@ -63,16 +61,11 @@ public class MainActivity extends BasePluginActivity implements OnClickListener{
 	@Override
 	protected void onStart() {
 		super.onStart();
-		EventBus.getDefault().register(this);
 	}
 	
 	@Override
 	protected void onStop() {
-		EventBus.getDefault().unregister(this);
 		super.onStop();
 	}
 	
-	public void onEvent(EventTestBack e){
-		Log.d(TAG, "plugin receive event: " + e);
-	}
 }

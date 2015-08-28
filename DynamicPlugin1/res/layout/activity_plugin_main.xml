@@ -29,5 +29,13 @@
        android:layout_height="wrap_content"
        android:text="post event"
         />
+    <Button 
+        android:id="@+id/pl_btn_loadso"
+        android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="load so"
+        />
+    
+    
 
 </LinearLayout>

@@ -37,14 +37,14 @@ public class MainActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		initView();
-		PluginManager.getManager().initPlugin(this, PluginManager.PATH_PLUGIN_A);
+//		PluginManager.getManager().initPlugin(this, PluginManager.PATH_PLUGIN_A);
 	}
 	
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		PluginManager.getManager().releasePlugin(this, PluginManager.PATH_PLUGIN_A);
+//		PluginManager.getManager().releasePlugin(this, PluginManager.PATH_PLUGIN_A);
 	}
 
 	private void loadActivity() {

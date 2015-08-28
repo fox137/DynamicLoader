@@ -1,26 +1,12 @@
 package com.example.dynamicloader;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.example.dynamicloader.data.Plugin;
-import com.example.dynamicloader.data.PluginResource;
-
-import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
-import android.content.res.Resources;
 import android.os.Environment;
-import android.text.TextUtils;
-import android.util.Log;
-import dalvik.system.DexClassLoader;
 
 public class PluginManager {
 
