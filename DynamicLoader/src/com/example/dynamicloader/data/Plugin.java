@@ -83,4 +83,8 @@ public class Plugin {
 		
 	}
 
+
+	public String getPath(){
+		return mDexPath;
+	}
 }

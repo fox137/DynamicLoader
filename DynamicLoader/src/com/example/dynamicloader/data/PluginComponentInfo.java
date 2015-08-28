@@ -54,5 +54,5 @@ public class PluginComponentInfo {
 			return sb.toString();
 		}
 	}
-
+	
 }

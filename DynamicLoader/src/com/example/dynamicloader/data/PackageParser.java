@@ -18,6 +18,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ServiceInfo;
 import android.os.Environment;
@@ -37,6 +38,7 @@ public class PackageParser {
 	private List<PluginActivityInfo> mReceivers = new ArrayList<PluginActivityInfo>();
 	private List<PluginServiceInfo> mServices   = new ArrayList<PluginServiceInfo>();
 	private List<PluginProviderInfo> mProviders = new ArrayList<PluginProviderInfo>();
+	private ApplicationInfo mApplicationInfo;
 
 	public PackageParser() {
 	}
@@ -61,14 +63,18 @@ public class PackageParser {
 			Field fr = packageClazz.getDeclaredField("receivers");
 			Field fp = packageClazz.getDeclaredField("providers");
 			Field fs = packageClazz.getDeclaredField("services");
+			Field fapp = packageClazz.getDeclaredField("applicationInfo");
 			fa.setAccessible(true);
 			fr.setAccessible(true);
 			fp.setAccessible(true);
 			fs.setAccessible(true);
+			fapp.setAccessible(true);
 			ArrayList<Object> activities = (ArrayList<Object>) fa.get(packageInfo);
 			ArrayList<Object> receivers = (ArrayList<Object>) fr.get(packageInfo);
 			ArrayList<Object> providers = (ArrayList<Object>) fp.get(packageInfo);
 			ArrayList<Object> services = (ArrayList<Object>) fs.get(packageInfo);
+			mApplicationInfo = (ApplicationInfo) fapp.get(packageInfo);
+			Log.i(TAG, "ApplicationInfo " + mApplicationInfo + ", name=" + (mApplicationInfo==null ? "null" : mApplicationInfo.className));
 
 			Class activityClazz = Class.forName("android.content.pm.PackageParser$Activity");
 			for (Object o : activities) {
@@ -153,4 +159,9 @@ public class PackageParser {
 	public List<PluginServiceInfo> getServices() {
 		return mServices;
 	}
+
+	public ApplicationInfo getApplicationInfo() {
+		return mApplicationInfo;
+	}
+
 }

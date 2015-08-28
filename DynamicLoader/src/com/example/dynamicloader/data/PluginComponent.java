@@ -13,6 +13,7 @@ import dalvik.system.DexClassLoader;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.content.pm.ApplicationInfo;
 import android.util.Log;
 
 /**
@@ -29,6 +30,7 @@ public class PluginComponent {
 	public List<PluginActivityInfo> mReceivers = new ArrayList<PluginActivityInfo>();
 	public List<PluginServiceInfo> mServices = new ArrayList<PluginServiceInfo>();
 	public List<PluginProviderInfo> mProviders = new ArrayList<PluginProviderInfo>();
+	public ApplicationInfo mApplicationInfo;
 	
 	public Set<BroadcastReceiver> mRegisterReceivers = new HashSet<BroadcastReceiver>();
 
@@ -45,6 +47,7 @@ public class PluginComponent {
 		mReceivers = pp.getReceivers();
 		mServices = pp.getServices();
 		mProviders = pp.getProviders();
+		mApplicationInfo = pp.getApplicationInfo();
 		registerReceivers(context.getApplicationContext(), classLoader);
 	}
 
