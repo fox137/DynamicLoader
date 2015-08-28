@@ -26,9 +26,6 @@ public class ProxyService extends Service {
 	private Class<?> mPluginClass;
 	private IServiceLifeCircle mPluginInstance;
 
-	// public ProxyService(String className) {
-	// launchPluginService(className);
-	// }
 
 	private void initClass(Intent intent) {
 		if (intent == null || mPluginInstance != null) {
@@ -44,7 +41,7 @@ public class ProxyService extends Service {
 		if (!TextUtils.isEmpty(dexPath) ) {
 			Log.i(TAG, "start plugin service dexPath=" + dexPath + ", clsName=" + className + ", action=" + action);
 			if (TextUtils.isEmpty(className) && !TextUtils.isEmpty(action) ) {
-				className = PluginManager.getManager().getPlugin(this, dexPath).getComponent().getActivityByAction(action);
+				className = PluginManager.getManager().getPlugin(this, dexPath).getComponent().getServiceByAction(action);
 			}
 			launchPluginService(className, dexPath);
 		}else {
@@ -61,10 +58,6 @@ public class ProxyService extends Service {
 			}
 			this.stopSelf();
 		}
-//		if (TextUtils.isEmpty(className) && !TextUtils.isEmpty(action) ) {
-//			className = PluginManager.getManager().getPlugin(this, dexPath).getComponent().getActivityByAction(action);
-//		}
-//		launchPluginService(className, dexPath);
 	}
 
 	private void launchPluginService(String className, String path) {

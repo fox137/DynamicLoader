@@ -85,5 +85,18 @@ public class PluginComponent {
 		return "";
 	}
 
+	public String getServiceByAction(String action){
+		for (PluginServiceInfo pi : mServices) {
+			for (IntentFilter filter : pi.intents) {
+				for (int j = 0; j < filter.countActions(); j++) {
+					if (filter.getAction(j).equals(action)) {
+						return pi.name;
+					}
+				}
+			}
+		}
+		return "";
+	}
+	
 
 }

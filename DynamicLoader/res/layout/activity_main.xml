@@ -24,4 +24,11 @@
         android:layout_height="wrap_content"
         android:text="load service 1"
         />
+    <Button 
+        android:id="@+id/btn_gotoevent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="goto event"
+        />
+    
 </LinearLayout>
