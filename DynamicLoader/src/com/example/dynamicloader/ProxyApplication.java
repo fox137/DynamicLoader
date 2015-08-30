@@ -5,6 +5,7 @@ import java.lang.reflect.Constructor;
 
 import com.example.dynamicloader.data.Plugin;
 import com.example.dynamicloader.lifecircle.IApplicationLifeCircle;
+import com.example.dynamicloader.lifecircle.PluginContext;
 
 import dalvik.system.DexClassLoader;
 import android.app.Application;
@@ -32,7 +33,10 @@ public class ProxyApplication extends Application {
 			Constructor<?> cons = mPluginClass.getConstructor();
 			IApplicationLifeCircle mPluginInstance = (IApplicationLifeCircle) cons.newInstance(new Object[] {});
 			Log.d(TAG, "instance = " + mPluginInstance);
-			mPluginInstance.setContext(this, plugin.getPath());
+			PluginContext pc = new PluginContext();
+			pc.context = this;
+			pc.dexPath = plugin.getPath();
+			mPluginInstance.setContext(pc);
 			mPluginInstance.callOnCreate();
 		} catch (Exception e) {
 			Log.e(TAG, "load class error: " + e);

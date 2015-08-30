@@ -14,6 +14,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.ProviderInfo;
 import android.util.Log;
 
 /**
@@ -49,7 +50,17 @@ public class PluginComponent {
 		mProviders = pp.getProviders();
 		mApplicationInfo = pp.getApplicationInfo();
 		registerReceivers(context.getApplicationContext(), classLoader);
+		installProvider(mProviders);
 	}
+
+	private void installProvider(List<PluginProviderInfo> list) {
+		List<ProviderInfo> pl = new ArrayList<ProviderInfo>();
+		for (PluginProviderInfo ppi : list) {
+			pl.add(ppi.info);
+		}
+		
+	}
+
 
 	private void registerReceivers(Context context, DexClassLoader classLoader) {
 		try {

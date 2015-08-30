@@ -1,10 +1,14 @@
 package com.example.dynamicplugin;
 
 import com.example.dynamicloader.lifecircle.IServiceLifeCircle;
+import com.example.dynamicloader.lifecircle.PluginContext;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -24,9 +28,9 @@ public class BasePluginService extends Service implements IServiceLifeCircle {
 	}
 
 	@Override
-	public void setContext(Service service, String path) {
-		mContext = service;
-		mDexPath = path;
+	public void setContext(PluginContext context) {
+		mContext = (Service) context.context;
+		mDexPath = context.dexPath;
 	}
 
 	@Override
@@ -128,6 +132,17 @@ public class BasePluginService extends Service implements IServiceLifeCircle {
 	@Override
 	public void sendBroadcast(Intent intent, String receiverPermission) {
 		mContext.sendBroadcast(intent, receiverPermission);
+	}
+	
+	@Override
+	public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
+		return mContext.registerReceiver(receiver, filter);
+	}
+	
+	@Override
+	public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter, String broadcastPermission,
+			Handler scheduler) {
+		return mContext.registerReceiver(receiver, filter, broadcastPermission, scheduler);
 	}
 
 	// ////////////////////// called by proxy service /////////////////////////

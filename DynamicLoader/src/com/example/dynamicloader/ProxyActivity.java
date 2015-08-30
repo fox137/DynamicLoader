@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 
 import com.example.dynamicloader.data.PluginResource;
 import com.example.dynamicloader.lifecircle.IActivityLifeCircle;
+import com.example.dynamicloader.lifecircle.PluginContext;
 
 import dalvik.system.DexClassLoader;
 import android.R.integer;
@@ -88,7 +89,10 @@ public class ProxyActivity extends Activity {
 			Constructor<?> cons = mPluginClass.getConstructor();
 			mPluginInstance = (IActivityLifeCircle) cons.newInstance(new Object[] {});
 			Log.d(TAG, "instance = " + mPluginInstance);
-			mPluginInstance.setContext(this, path);
+			PluginContext pc = new PluginContext();
+			pc.context = this;
+			pc.dexPath = path;
+			mPluginInstance.setContext(pc);
 			mPluginInstance.callOnCreate(new Bundle());
 		} catch (Exception e) {
 			Log.e(TAG, "load class error: " + e);

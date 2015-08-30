@@ -1,17 +1,21 @@
 package com.example.dynamicplugin;
 
-
 import com.example.dynamicloader.lifecircle.IActivityLifeCircle;
+import com.example.dynamicloader.lifecircle.PluginContext;
+
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
-public class BasePluginActivity extends Activity implements IActivityLifeCircle{
+public class BasePluginActivity extends Activity implements IActivityLifeCircle {
 
 	protected Activity mContext;
 	private static final String PROXY_ACTIVITY_ACTION = "com.example.dynamicloader.ProxyActivity";
@@ -25,20 +29,18 @@ public class BasePluginActivity extends Activity implements IActivityLifeCircle{
 
 	/**
 	 * Set Host context
-	 * @param at
 	 */
 	@Override
-	public void setContext(Activity at, String dexPath) {
-		mContext = at;
-		mDexPath = dexPath;
-//		mInstrumentation = new Instrumentation();
+	public void setContext(PluginContext context) {
+		mContext = (Activity) context.context;
+		mDexPath = context.dexPath;
 	}
 
 	public Activity getContext() {
 		return mContext;
 	}
 
-	/////////////////////////// Activity Life Circle //////////////////////////////
+	/////////////////// Activity Life Circle /////////////////////
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// When context is null, the plugin is started by self
@@ -47,33 +49,33 @@ public class BasePluginActivity extends Activity implements IActivityLifeCircle{
 			mContext = this;
 		}
 	}
-	
+
 	@Override
 	protected void onStart() {
 		if (mContext == this) {
 			super.onStart();
-		} 
+		}
 	}
 
 	@Override
 	protected void onRestart() {
 		if (mContext == this) {
 			super.onRestart();
-		} 
+		}
 	}
 
 	@Override
 	protected void onResume() {
 		if (mContext == this) {
 			super.onResume();
-		} 
+		}
 	}
 
 	@Override
 	protected void onPause() {
 		if (mContext == this) {
 			super.onPause();
-		} 
+		}
 	}
 
 	@Override
@@ -87,11 +89,10 @@ public class BasePluginActivity extends Activity implements IActivityLifeCircle{
 	protected void onDestroy() {
 		if (mContext == this) {
 			super.onDestroy();
-		} 
+		}
 	}
-	
-	
-	/////////////////////// Resource //////////////////////
+
+	// ///////////////////// Resource //////////////////////
 
 	@Override
 	public void setContentView(int layoutResID) {
@@ -118,7 +119,6 @@ public class BasePluginActivity extends Activity implements IActivityLifeCircle{
 			mContext.setContentView(view);
 		}
 	}
-	
 
 	@Override
 	public void setContentView(View view, LayoutParams params) {
@@ -138,8 +138,7 @@ public class BasePluginActivity extends Activity implements IActivityLifeCircle{
 		}
 	}
 
-	
-	///////////////////////////start activity service broadcast//////////////////////////////
+	///////////////start activity service broadcast//////////////////
 	@Override
 	public void startActivity(Intent intent) {
 		Log.d(TAG, "intent action = " + intent.getAction());
@@ -159,8 +158,8 @@ public class BasePluginActivity extends Activity implements IActivityLifeCircle{
 			mContext.startActivityForResult(genPluginIntent(intent), requestCode);
 		}
 	}
-	
-	private Intent genPluginIntent(Intent intent){
+
+	private Intent genPluginIntent(Intent intent) {
 		// start activity by proxy activity
 		Intent proxyIntent = new Intent(PROXY_ACTIVITY_ACTION);
 		if (intent.getAction() == null) {
@@ -175,7 +174,7 @@ public class BasePluginActivity extends Activity implements IActivityLifeCircle{
 		proxyIntent.putExtra(EXTRA_DEXPATH, mDexPath);
 		return proxyIntent;
 	}
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (mContext == this) {
@@ -187,7 +186,7 @@ public class BasePluginActivity extends Activity implements IActivityLifeCircle{
 	public ComponentName startService(Intent intent) {
 		if (mContext == this) {
 			return super.startService(intent);
-		}else {
+		} else {
 			Intent proxyIntent = new Intent(PROXY_SERVICE_ACTION);
 			if (intent.getAction() == null) {
 				// from new Intent(this, XXXActivity.class)
@@ -203,59 +202,67 @@ public class BasePluginActivity extends Activity implements IActivityLifeCircle{
 		}
 	}
 
-
 	@Override
 	public void sendBroadcast(Intent intent) {
 		mContext.sendBroadcast(intent);
 	}
-	
-	
+
 	@Override
 	public void sendBroadcast(Intent intent, String receiverPermission) {
 		mContext.sendBroadcast(intent, receiverPermission);
 	}
 
+	@Override
+	public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
+		return mContext.registerReceiver(receiver, filter);
+	}
+
+	@Override
+	public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter, String broadcastPermission,
+			Handler scheduler) {
+		return mContext.registerReceiver(receiver, filter, broadcastPermission, scheduler);
+	}
+
 	
 	
+	///////////////// Called by Proxy Activity/////////////////////
 	
-	/////////////////////////// Called by Proxy Activity /////////////////////////////
 	@Override
 	public void callOnCreate(Bundle bundle) {
 		Log.i(TAG, "callOnCreate");
 		onCreate(bundle);
 	}
 
-
 	@Override
 	public void callOnStart() {
 		Log.i(TAG, "callOnStart");
 		onStart();
 	}
-	
+
 	@Override
 	public void callOnRestart() {
 		Log.i(TAG, "callOnRestart");
 		onRestart();
 	}
-	
+
 	@Override
 	public void callOnResume() {
 		Log.i(TAG, "callOnResume");
 		onResume();
 	}
-	
+
 	@Override
 	public void callOnPause() {
 		Log.i(TAG, "callOnPause");
 		onPause();
 	}
-	
+
 	@Override
 	public void callOnStop() {
 		Log.i(TAG, "callOnStop");
 		onStop();
 	}
-	
+
 	@Override
 	public void callOnDestory() {
 		Log.i(TAG, "callOnDestory");
@@ -267,5 +274,4 @@ public class BasePluginActivity extends Activity implements IActivityLifeCircle{
 		onActivityResult(requestCode, resultCode, data);
 	}
 
-	
 }

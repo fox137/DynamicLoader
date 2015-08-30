@@ -1,6 +1,7 @@
 package com.example.dynamicplugin;
 
 import com.example.dynamicloader.lifecircle.IApplicationLifeCircle;
+import com.example.dynamicloader.lifecircle.PluginContext;
 
 import android.app.Application;
 import android.content.Context;
@@ -10,14 +11,16 @@ public class BasePluginApplication extends Application implements IApplicationLi
 	
 	private static final String TAG = "BasePluginApplication";
 	private Application mApplication;
-	public static Context sContext;
+	public static Context context;
+	private String mDexPath;
 	
 	@Override
 	public void onCreate() {
+		Log.i(TAG, "onCreate");
 		if (mApplication == null) {
 			super.onCreate();
 			mApplication = this;
-			sContext = getApplicationContext();
+			context = getApplicationContext();
 		}
 	}
 
@@ -28,9 +31,10 @@ public class BasePluginApplication extends Application implements IApplicationLi
 	}
 
 	@Override
-	public void setContext(Application app, String path) {
-		mApplication = app;
-		sContext = app.getApplicationContext();
+	public void setContext(PluginContext context) {
+		mApplication = (Application) context.context;
+		mDexPath = context.dexPath;
+		this.context = mApplication.getApplicationContext();
 	}
 
 }

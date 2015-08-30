@@ -5,6 +5,6 @@ import android.app.Application;
 
 public interface IApplicationLifeCircle {
 
-	void setContext(Application context, String dexPath);
+	void setContext(PluginContext context);
 	void callOnCreate();
 }

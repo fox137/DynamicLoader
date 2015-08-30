@@ -10,12 +10,11 @@
 
     <application
         android:name="com.example.dynamicplugin.BasePluginApplication"
-        android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.example.dynamicplugin.MainActivity"
+            android:name="com.example.dynamicplugin.test.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,17 +23,20 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.example.dynamicplugin.MainService" >
+        <service android:name="com.example.dynamicplugin.test.MainService" >
             <intent-filter>
-                <action android:name="com.example.dynamicplugin.MainService" />
+                <action android:name="com.example.dynamicplugin.test.MainService" />
             </intent-filter>
         </service>
 
-        <receiver android:name="com.example.dynamicplugin.MainReceiver" >
+        <receiver android:name="com.example.dynamicplugin.test.MainReceivereiver" >
             <intent-filter>
-                <action android:name="com.example.dynamicplugin.MainReceiver" />
+                <action android:name="com.example.dynamicplugin.test.MainReceivereiver" />
             </intent-filter>
         </receiver>
+        <provider android:name="com.example.dynamicplugin.test.TestContentProvider">
+            
+        </provider>
     </application>
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
