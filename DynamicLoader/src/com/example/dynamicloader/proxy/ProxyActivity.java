@@ -1,4 +1,4 @@
-package com.example.dynamicloader;
+package com.example.dynamicloader.proxy;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,6 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import com.example.dynamicloader.PluginManager;
 import com.example.dynamicloader.data.PluginResource;
 import com.example.dynamicloader.lifecircle.IActivityLifeCircle;
 import com.example.dynamicloader.lifecircle.PluginContext;
@@ -92,7 +93,7 @@ public class ProxyActivity extends Activity {
 			PluginContext pc = new PluginContext();
 			pc.context = this;
 			pc.dexPath = path;
-			mPluginInstance.setContext(pc);
+			mPluginInstance.attach(pc);
 			mPluginInstance.callOnCreate(new Bundle());
 		} catch (Exception e) {
 			Log.e(TAG, "load class error: " + e);

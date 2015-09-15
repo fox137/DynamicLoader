@@ -3,6 +3,8 @@ package com.example.dynamicloader;
 import java.io.File;
 
 import com.example.dynamicloader.data.PluginComponent;
+import com.example.dynamicloader.proxy.ProxyActivity;
+import com.example.dynamicloader.proxy.ProxyService;
 import com.example.eventhandler.EventHandlerMananger;
 import com.example.eventhandler.IEventListener;
 import com.example.eventhandler.RequestEventHandler;

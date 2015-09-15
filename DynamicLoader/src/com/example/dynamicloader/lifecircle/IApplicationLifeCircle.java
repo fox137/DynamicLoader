@@ -5,6 +5,6 @@ import android.app.Application;
 
 public interface IApplicationLifeCircle {
 
-	void setContext(PluginContext context);
+	void attach(PluginContext context);
 	void callOnCreate();
 }

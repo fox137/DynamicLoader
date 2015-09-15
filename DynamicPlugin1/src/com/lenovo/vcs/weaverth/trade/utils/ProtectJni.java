@@ -10,8 +10,8 @@ public class ProtectJni {
 	static{
 		try {
 		
-			System.load("/data/data/" + BasePluginApplication.context.getPackageName()+"/lib/libprotect.so");
-//			System.load("/data/data/com.example.dynamicloader/app_pluginlib/libprotect.so");
+//			System.load("/data/data/" + BasePluginApplication.context.getPackageName()+"/lib/libprotect.so");
+			System.load("/data/data/com.example.dynamicloader/app_pluginlib/libprotect.so");
 //			System.loadLibrary("protect");
 		} catch (Exception e) {
 			// TODO: handle exception

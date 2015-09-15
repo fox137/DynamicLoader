@@ -9,8 +9,8 @@
         android:targetSdkVersion="15" />
 
     <application
+        android:name="com.example.dynamicloader.proxy.ProxyApplication"
         android:allowBackup="true"
-        android:name="com.example.dynamicloader.ProxyApplication"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
@@ -23,7 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.dynamicloader.ProxyActivity" >
+        <activity android:name="com.example.dynamicloader.proxy.ProxyActivity" >
             <intent-filter>
                 <action android:name="com.example.dynamicloader.ProxyActivity" />
 
@@ -31,7 +31,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.example.dynamicloader.ProxyService" >
+        <service android:name="com.ecom.example.dynamicloader.proxy.ProxyService" >
             <intent-filter>
                 <action android:name="com.example.dynamicloader.ProxyService" />
             </intent-filter>

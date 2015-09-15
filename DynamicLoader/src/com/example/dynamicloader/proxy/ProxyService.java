@@ -1,9 +1,10 @@
-package com.example.dynamicloader;
+package com.example.dynamicloader.proxy;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
+import com.example.dynamicloader.PluginManager;
 import com.example.dynamicloader.lifecircle.IServiceLifeCircle;
 import com.example.dynamicloader.lifecircle.PluginContext;
 
@@ -71,7 +72,7 @@ public class ProxyService extends Service {
 			PluginContext pc = new PluginContext();
 			pc.context = this;
 			pc.dexPath = path;
-			mPluginInstance.setContext(pc);
+			mPluginInstance.attach(pc);
 			mPluginInstance.callOnCreate();
 		} catch (Exception e) {
 			Log.e(TAG, "load class error: " + e);

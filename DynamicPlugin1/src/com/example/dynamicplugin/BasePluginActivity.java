@@ -31,7 +31,8 @@ public class BasePluginActivity extends Activity implements IActivityLifeCircle 
 	 * Set Host context
 	 */
 	@Override
-	public void setContext(PluginContext context) {
+	
+	public void attach(PluginContext context) {
 		mContext = (Activity) context.context;
 		mDexPath = context.dexPath;
 	}

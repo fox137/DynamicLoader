@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 public interface IActivityLifeCircle {
 
-	void setContext(PluginContext context);
+	void attach(PluginContext context);
 	void callOnCreate(Bundle bundle);
 	void callOnStart();
 	void callOnRestart();

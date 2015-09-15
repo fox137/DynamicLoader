@@ -34,7 +34,9 @@
                 <action android:name="com.example.dynamicplugin.test.MainReceivereiver" />
             </intent-filter>
         </receiver>
-        <provider android:name="com.example.dynamicplugin.test.TestContentProvider">
+        <provider android:name="com.example.dynamicplugin.test.TestContentProvider"
+            android:authorities="com.example.dynamicplugin"
+            android:exported="false">
             
         </provider>
     </application>

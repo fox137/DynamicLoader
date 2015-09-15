@@ -36,6 +36,20 @@
        android:text="load so"
         />
     
+    <Button 
+        android:id="@+id/pl_btn_dbinsert"
+        android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="insert db"
+        />
+    
+    <Button 
+        android:id="@+id/pl_btn_dbquery"
+        android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="query db"
+        />
+    
     
 
 </LinearLayout>

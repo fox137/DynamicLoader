@@ -28,7 +28,7 @@ public class BasePluginService extends Service implements IServiceLifeCircle {
 	}
 
 	@Override
-	public void setContext(PluginContext context) {
+	public void attach(PluginContext context) {
 		mContext = (Service) context.context;
 		mDexPath = context.dexPath;
 	}

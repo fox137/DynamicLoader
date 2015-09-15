@@ -1,6 +1,7 @@
 package com.example.dynamicplugin.test;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,7 @@ import com.example.dynamicplugin.BasePluginApplication;
 import com.example.dynamicplugin.R;
 import com.example.dynamicplugin.R.id;
 import com.example.dynamicplugin.R.layout;
+import com.example.dynamicplugin.test.TestDBContainer.TestTableA;
 import com.example.events.RequestEvent;
 import com.lenovo.vcs.weaverth.trade.utils.ProtectJni;
 
@@ -27,6 +29,8 @@ public class MainActivity extends BasePluginActivity implements OnClickListener{
 		findViewById(R.id.pl_btn_startservice).setOnClickListener(this);
 		findViewById(R.id.pl_btn_event).setOnClickListener(this);
 		findViewById(R.id.pl_btn_loadso).setOnClickListener(this);
+		findViewById(R.id.pl_btn_dbinsert).setOnClickListener(this);
+		findViewById(R.id.pl_btn_dbquery).setOnClickListener(this);
 		Log.d("xufeng", BasePluginApplication.context.getPackageName()+"/lib/libprotect.so");
 	}
 
@@ -47,6 +51,14 @@ public class MainActivity extends BasePluginActivity implements OnClickListener{
 			break;
 		case R.id.pl_btn_loadso:
 			Log.i(TAG, "load so: " + ProtectJni.alpbk());
+			break;
+		case R.id.pl_btn_dbinsert:
+			ContentValues values = new ContentValues();
+			values.put(TestTableA.ID                 , 			1);
+			values.put(TestTableA.NAME          , 			"a");
+			getContentResolver().insert(TestDBContainer.TestTableA.CONTENT_URI, values);
+			break;
+		case R.id.pl_btn_dbquery:
 			break;
 		default:
 			break;

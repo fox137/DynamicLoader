@@ -31,7 +31,7 @@ public class BasePluginApplication extends Application implements IApplicationLi
 	}
 
 	@Override
-	public void setContext(PluginContext context) {
+	public void attach(PluginContext context) {
 		mApplication = (Application) context.context;
 		mDexPath = context.dexPath;
 		this.context = mApplication.getApplicationContext();

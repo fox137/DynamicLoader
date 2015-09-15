@@ -1,8 +1,9 @@
-package com.example.dynamicloader;
+package com.example.dynamicloader.proxy;
 
 
 import java.lang.reflect.Constructor;
 
+import com.example.dynamicloader.PluginManager;
 import com.example.dynamicloader.data.Plugin;
 import com.example.dynamicloader.lifecircle.IApplicationLifeCircle;
 import com.example.dynamicloader.lifecircle.PluginContext;
@@ -36,7 +37,7 @@ public class ProxyApplication extends Application {
 			PluginContext pc = new PluginContext();
 			pc.context = this;
 			pc.dexPath = plugin.getPath();
-			mPluginInstance.setContext(pc);
+			mPluginInstance.attach(pc);
 			mPluginInstance.callOnCreate();
 		} catch (Exception e) {
 			Log.e(TAG, "load class error: " + e);
